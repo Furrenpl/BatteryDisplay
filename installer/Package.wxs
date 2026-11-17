@@ -1,0 +1,39 @@
+﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+  <Package Name="BatteryDisplay" Manufacturer="BatteryDisplay" Version="1.0.0" Language="1049" UpgradeCode="F6B9D67A-324A-4B89-9754-9256F5D190E7" Scope="perUser" InstallerVersion="500">
+    <MajorUpgrade DowngradeErrorMessage="Уже установлена более новая версия BatteryDisplay." />
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+    <Property Id="ARPCOMMENTS" Value="Заряд и подключение беспроводных устройств на панели задач." />
+    <StandardDirectory Id="LocalAppDataFolder">
+      <Directory Id="ProgramsFolder" Name="Programs">
+        <Directory Id="INSTALLFOLDER" Name="BatteryDisplay">
+          <Component Id="ApplicationFiles" Guid="AB5BD496-709E-4EF9-867A-7CF183DF8BAE">
+            <File Id="ApplicationExe" Source="$(var.PublishDir)\BatteryDisplay.exe" />
+            <RegistryValue Root="HKCU" Key="Software\BatteryDisplay\Installer" Name="Installed" Type="integer" Value="1" KeyPath="yes" />
+            <RemoveFolder Id="RemoveInstallFolder" On="uninstall" />
+          </Component>
+          <Component Id="AutostartRegistry" Guid="2F52C0AD-3368-4C53-8CBA-BCA421F75B33">
+            <RegistryValue Root="HKCU" Key="Software\Microsoft\Windows\CurrentVersion\Run" Name="BatteryDisplay" Type="string" Value="&quot;[#ApplicationExe]&quot;" KeyPath="yes" />
+          </Component>
+        </Directory>
+      </Directory>
+    </StandardDirectory>
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="MenuFolder" Name="BatteryDisplay">
+        <Component Id="StartMenuShortcut" Guid="90E3806B-FDED-479E-BF4F-3023356F1C04">
+          <Shortcut Id="StartShortcut" Name="BatteryDisplay" Target="[#ApplicationExe]" WorkingDirectory="INSTALLFOLDER" />
+          <RegistryValue Root="HKCU" Key="Software\BatteryDisplay\Installer" Name="Shortcut" Type="integer" Value="1" KeyPath="yes" />
+          <RemoveFolder Id="RemoveMenuFolder" On="uninstall" />
+        </Component>
+      </Directory>
+    </StandardDirectory>
+    <Feature Id="Main" Title="BatteryDisplay" Description="Приложение и ярлык в меню Пуск. Настройки сохраняются в профиле пользователя." Level="1" AllowAbsent="no" Display="expand">
+      <ComponentRef Id="ApplicationFiles" />
+      <ComponentRef Id="StartMenuShortcut" />
+      <Feature Id="Autostart" Title="Автозапуск при входе в Windows" Description="Выберите установку этого компонента на локальный диск, чтобы запускать BatteryDisplay автоматически." Level="2">
+        <ComponentRef Id="AutostartRegistry" />
+      </Feature>
+    </Feature>
+    <ui:WixUI Id="WixUI_FeatureTree" />
+    <WixVariable Id="WixUILicenseRtf" Value="$(var.SourceDir)\License.rtf" />
+  </Package>
+</Wix>
